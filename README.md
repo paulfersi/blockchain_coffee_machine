@@ -1,8 +1,8 @@
-# Blockchain Coffee Machine
+# Blockchain Coffee Machine (WIP)
 
 My first solidity project
 
-THIS IS STILL WORK IN PROGRESS
+WARNING: THIS IS STILL WORK IN PROGRESS
 
 ## Features
 
