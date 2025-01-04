@@ -49,4 +49,4 @@ Notes
 -> when you compile contracts-> you get the ABI
 -> when you deploy contracts -> you get the address
 
-I compiled and deployed them using Remix.
+I compiled and deployed them using Remix on the Sepolia testnet.
