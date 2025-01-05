@@ -9,7 +9,7 @@ contract CoffeeMachineToken is ERC721URIStorage, Ownable {
     uint256 private tokenCount;
     address public coffeeMachineFactoryOwner; 
 
-    string public constant NFT_URI = "https://ipfs.io/ipfs/bafkreiguhoo2jy4c73kxdsd7d2ebcjjgw5boqsujddhoyje5oewe5oedum";
+    string public constant NFT_URI = "ipfs://bafkreiguhoo2jy4c73kxdsd7d2ebcjjgw5boqsujddhoyje5oewe5oedum";
 
     constructor(address initialOwner, uint256 price) ERC721("Coffee Machine", "COFF") Ownable(initialOwner){
         coffeeMachineFactoryOwner = initialOwner;
