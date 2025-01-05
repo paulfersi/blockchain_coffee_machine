@@ -30,7 +30,7 @@ The smart contracts are:
 
 ## NFT info
 
-I uploaded the NFT to IPFS. Here is the [json](https://ipfs.io/ipfs/bafkreiguhoo2jy4c73kxdsd7d2ebcjjgw5boqsujddhoyje5oewe5oedum).
+I uploaded the NFT to IPFS. Here is the [json](https://gateway.pinata.cloud/ipfs/bafkreiguhoo2jy4c73kxdsd7d2ebcjjgw5boqsujddhoyje5oewe5oedum).
 
 The [image](utils/CoffeeMachine.jpg) of the token is AI-generated.
 
