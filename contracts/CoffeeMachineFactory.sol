@@ -24,7 +24,7 @@ contract CoffeeMachineFactory {
 
     constructor() {
         factoryOwner = msg.sender;
-        currentNftPrice = 1000000000000000;
+        currentNftPrice = 0.00001 ether;
         tokenContract = new CoffeeMachineToken(address(this), currentNftPrice);
         tokenCount = 0;
     }
@@ -35,8 +35,8 @@ contract CoffeeMachineFactory {
         currentNftPrice = price;
     }
 
-    function mintNFTAndDeployMachine() public payable {
-        require(msg.value >= currentNftPrice, "Insufficient funds to mint NFT");
+    function mintNFTAndDeployMachine(uint256 payment) public payable {
+        require(payment >= currentNftPrice, "Insufficient funds to mint NFT");
 
         // mint the NFT
         tokenCount++;
