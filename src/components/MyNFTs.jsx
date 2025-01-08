@@ -31,7 +31,18 @@ const MyNFTs = ({ provider }) => {
         // tokenIDs owned by the owner
         const tokenIds = await factoryContract.getOwnedTokenIds(address);
 
-        setNFTs(tokenIds.filter((id) => id.toNumber() > 0)); // Ensure tokenIds are valid
+        //allows to make multiple async request
+        const nftData = await Promise.all(
+          tokenIds.map(async (id) => {
+            const machineAddress = await factoryContract.getMachineAddress(id);
+            return {
+              tokenId: id.toString(),
+              machineAddress
+            };
+          })
+        );
+
+        setNFTs(nftData); //each nft is stored with tokenID and machineAddress
       } catch (err) {
         console.error(err);
         setError("Failed to fetch NFTs.");
@@ -50,8 +61,11 @@ const MyNFTs = ({ provider }) => {
       {error && <p style={{ color: "red" }}>{error}</p>}
       {nfts.length > 0 ? (
         <ul>
-          {nfts.map((id) => (
-            <li key={id.toString()}>Token ID: {id.toString()}</li>
+          {nfts.map(({ tokenId, machineAddress }) => (
+            <li key={tokenId}>
+              <p>Token ID: {tokenId}</p>
+              <p>Vending Machine Address: {machineAddress}</p>
+            </li>
           ))}
         </ul>
       ) : (
