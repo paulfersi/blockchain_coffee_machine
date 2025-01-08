@@ -64,7 +64,10 @@ const MyNFTs = ({ provider }) => {
           {nfts.map(({ tokenId, machineAddress }) => (
             <li key={tokenId}>
               <p>Token ID: {tokenId}</p>
-              <p>Vending Machine Address: {machineAddress}</p>
+              <a
+                href={`https://sepolia.etherscan.io/address/${machineAddress}`}
+                target="_blank"
+              >${machineAddress}</a>
             </li>
           ))}
         </ul>
