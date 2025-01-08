@@ -20,12 +20,17 @@ const MintNFT = ({ provider }) => {
       signer
     );
 
+    //debug
+    console.log("FUNCTIONS", factoryContract.interface.forEachFunction((f)=>console.log(f)))
+
     try {
       setLoading(true);
       setError("");
       setTransactionHash("");
 
       const nftPrice = await factoryContract.currentNftPrice();
+
+
       console.log("NFT Price:", ethers.formatEther(nftPrice), "ETH");
 
       const tx = await factoryContract.createNFTAndMachine([], {

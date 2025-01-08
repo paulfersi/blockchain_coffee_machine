@@ -133,7 +133,13 @@ export const COFFEE_MACHINE_FACTORY_ABI = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "payment",
+				"type": "uint256"
+			}
+		],
 		"name": "mintNFTAndDeployMachine",
 		"outputs": [],
 		"stateMutability": "payable",
