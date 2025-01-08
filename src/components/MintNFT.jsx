@@ -33,8 +33,10 @@ const MintNFT = ({ provider }) => {
 
       console.log("NFT Price:", ethers.utils.formatEther(nftPrice), "ETH");
 
-      const tx = await factoryContract.mintNFTAndDeployMachine([], {
-        value: nftPrice, 
+      const formattedPrice = ethers.utils.parseEther(ethers.utils.formatEther(nftPrice)); //price must be BigNumber
+
+      const tx = await factoryContract.mintNFTAndDeployMachine(formattedPrice, {
+        value: formattedPrice, 
       });
 
       console.log("Transaction sent:", tx.hash);
