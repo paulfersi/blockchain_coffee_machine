@@ -16,7 +16,7 @@ const MyNFTs = ({ provider }) => {
 
       try {
         const signer = provider.getSigner();
-        const address = await signer.address;
+        const address = await signer.getAddress();
 
         if (!ethers.utils.isAddress(COFFEE_MACHINE_FACTORY_ADDRESS)) {
           throw new Error("Invalid contract address");
@@ -29,7 +29,7 @@ const MyNFTs = ({ provider }) => {
         );
 
         // tokenIDs owned by the owner
-        const tokenIds = await factoryContract.addressToTokenID(address);
+        const tokenIds = await factoryContract.getOwnedTokenIds(address);
 
         setNFTs(tokenIds.filter((id) => id.toNumber() > 0)); // Ensure tokenIds are valid
       } catch (err) {
