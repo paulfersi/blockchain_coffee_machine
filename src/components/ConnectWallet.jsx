@@ -22,11 +22,11 @@ const ConnectWallet = ({ setProvider }) => {
           params: [account, "latest"],
         });
 
-        const ethBalance = ethers.formatEther(balance);
+        const ethBalance = ethers.utils.formatEther(balance);
         setBalance(ethBalance);
 
         // provider is set for access accros components
-        const provider = new ethers.BrowserProvider(window.ethereum);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
         setProvider(provider);
         
       } catch (err) {

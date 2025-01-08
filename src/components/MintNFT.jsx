@@ -21,7 +21,7 @@ const MintNFT = ({ provider }) => {
     );
 
     //debug
-    console.log("FUNCTIONS", factoryContract.interface.forEachFunction((f)=>console.log(f)))
+    console.log("FUNCTIONS", factoryContract.interface.fragments);
 
     try {
       setLoading(true);
@@ -31,9 +31,9 @@ const MintNFT = ({ provider }) => {
       const nftPrice = await factoryContract.currentNftPrice();
 
 
-      console.log("NFT Price:", ethers.formatEther(nftPrice), "ETH");
+      console.log("NFT Price:", ethers.utils.formatEther(nftPrice), "ETH");
 
-      const tx = await factoryContract.createNFTAndMachine([], {
+      const tx = await factoryContract.mintNFTAndDeployMachine([], {
         value: nftPrice, 
       });
 
