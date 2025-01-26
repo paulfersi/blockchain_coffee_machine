@@ -10,7 +10,8 @@ body {
   justify-content: center;
   align-items: center;
   font-family: Arial, sans-serif;
-  background-color: #8c8b8b;
+  background-color: #030b07;
+  color: #E7E7E7;
 }
 
 
@@ -19,5 +20,6 @@ div {
   padding: 20px;
   border: 1px solid #ddd; 
   border-radius: 8px; 
-  background-color: #fff; 
+  background-color: #185a37
+; 
 }
