@@ -64,7 +64,7 @@ const MintNFT = ({ provider }) => {
       </button>
       {transactionHash && (
         <p>
-          Transaction Hash:{" "}
+          Last Transaction Hash:{" "}
           <a
             href={`https://sepolia.etherscan.io/tx/${transactionHash}`}
             target="_blank"

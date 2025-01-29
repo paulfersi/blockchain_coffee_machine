@@ -23,3 +23,8 @@ div {
   background-color: #185a37
 ; 
 }
+
+li{
+  border: 1px solid #ddd; 
+  border-radius: 8px; 
+}
