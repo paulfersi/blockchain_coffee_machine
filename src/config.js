@@ -1,4 +1,4 @@
-export const COFFEE_MACHINE_FACTORY_ADDRESS = '0xbdD609570c1dD5fdeCFBe53B96Ca7BdD8f97bb14';
+export const COFFEE_MACHINE_FACTORY_ADDRESS = '0x2FabAA00ce8A4aCfC2d1685EE44185b651d2235E';
 export const COFFEE_MACHINE_FACTORY_ABI = [
 	{
 		"inputs": [],
@@ -244,6 +244,29 @@ export const COFFEE_MACHINE_FACTORY_ABI = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "updateTokenOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -580,10 +603,10 @@ export const COFFEE_MACHINE_TOKEN_ABI = [
 	},
 	{
 		"inputs": [],
-		"name": "coffeeMachineFactoryOwner",
+		"name": "coffeeMachineFactory",
 		"outputs": [
 			{
-				"internalType": "address",
+				"internalType": "contract CoffeeMachineFactory",
 				"name": "",
 				"type": "address"
 			}

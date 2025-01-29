@@ -68,4 +68,24 @@ contract CoffeeMachineFactory {
     function withdrawFromMachine(uint256 tokenId) public onlyTokenOwner(tokenId) {
         tokenIdToMachine[tokenId].withdraw();
     }
+
+    function updateTokenOwnership(address from, address to, uint256 tokenId) external {
+        require(msg.sender == address(tokenContract), "Only token contract can update ownership");
+
+        // Remove the token from the previous owner's list
+        if (from != address(0)) {
+            uint256[] storage fromTokens = ownerToTokenIds[from];
+            for (uint256 i = 0; i < fromTokens.length; i++) {
+                if (fromTokens[i] == tokenId) {
+                    fromTokens[i] = fromTokens[fromTokens.length - 1];
+                    fromTokens.pop();
+                    break;
+                }
+            }
+        }
+
+        // Add the token to the new owner's list
+        ownerToTokenIds[to].push(tokenId);
+        tokenIdToOwner[tokenId] = to;
+    }
 }
