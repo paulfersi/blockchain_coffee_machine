@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { COFFEE_MACHINE_FACTORY_ADDRESS, COFFEE_MACHINE_FACTORY_ABI } from "../config";
+import TokenCard from "./TokenCard"
 
 const MyNFTs = ({ provider }) => {
   const [nfts, setNFTs] = useState([]);
@@ -62,14 +63,7 @@ const MyNFTs = ({ provider }) => {
       {nfts.length > 0 ? (
         <ul>
           {nfts.map(({ tokenId, machineAddress }) => (
-            <li key={tokenId}>
-              <p>Token ID: {tokenId}</p>
-              <p>Machine associated:</p>
-              <a
-                href={`https://sepolia.etherscan.io/address/${machineAddress}`}
-                target="_blank"
-              >${machineAddress}</a>
-            </li>
+            <TokenCard key={tokenId} tokenId={tokenId} machineAddress={machineAddress} />
           ))}
         </ul>
       ) : (
