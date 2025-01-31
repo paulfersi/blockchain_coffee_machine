@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { COFFEE_MACHINE_ABI } from "../config";
 import { ethers } from "ethers";
-import {QRCodeSVG} from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
 
 const TokenCard = ({ tokenId, machineAddress, provider }) => {
   const [isConnected, setIsConnected] = useState(false);
-  const [port, setPort] = useState(null); //serial port
+  const portRef = useRef(null); 
+
   const [contract, setContract] = useState(null); //contract instance
 
   useEffect(() => {
@@ -13,40 +14,40 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
 
     //initialize the machine contract related to this specific TokenCard
     const initializeMachineContract = async () => {
-      try{
+      try {
         const signer = provider.getSigner();
 
-        const machineContractInstance = new ethers.Contract(machineAddress,COFFEE_MACHINE_ABI,signer);
+        const machineContractInstance = new ethers.Contract(machineAddress, COFFEE_MACHINE_ABI, signer);
         setContract(machineContractInstance);
-      }catch(error){
-        console.error("Error initializing machine contract for",{machineAddress});
+      } catch (error) {
+        console.error("Error initializing machine contract for", { machineAddress });
       }
     };
 
     initializeMachineContract();
-  },[provider,machineAddress]);
+  }, [provider, machineAddress]);
 
   useEffect(() => {
     //listen to Deposit event on this machine
     if (!contract) return;
 
     const filter = contract.filters.Deposit();
-    contract.on(filter,(payee,value,time,balance) => {
-      console.log("Deposit event:", {payee,value,time,balance});
+    contract.on(filter, (payee, value, time, balance) => {
+      console.log("Deposit event:", { payee, value, time, balance });
       triggerRelay();
     });
 
     //cleanup filter once the component unmounts
-    return () =>{
+    return () => {
       contract.off(filter);
     };
   }, [contract]);
 
   const handleConnection = async () => {
     if (isConnected) {
-      if (port) {
-        await port.close();
-        setPort(null);
+      if (portRef.current) {
+        await portRef.current.close();
+        portRef.current = null;
       }
       setIsConnected(false);
       alert("Arduino disconnected.");
@@ -55,7 +56,7 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
       try {
         const newPort = await navigator.serial.requestPort();
         await newPort.open({ baudRate: 9600 });
-        setPort(newPort);
+        portRef.current = newPort;
         setIsConnected(true);
         alert("Arduino connected successfully!");
       } catch (error) {
@@ -66,14 +67,14 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
   };
 
   const triggerRelay = async () => {
-    if (!port) {
+    if (!portRef.current) {
       alert("Arduino is not connected.");
       return;
     }
 
     try {
-      const writer = port.writable.getWriter();
-      await writer.write(new TextEncoder().encode("TRIGGER_RELAY\n")); //send command to arduino
+      const writer = portRef.current.writable.getWriter();
+      await writer.write(new TextEncoder().encode("TRIGGER_RELAY\n")); //send custom command to arduino
       writer.releaseLock();
       alert("Relay triggered!");
     } catch (error) {
@@ -93,23 +94,18 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
       >
         {machineAddress}
       </a>
-      <br/>
+      <br />
       <div style={{ margin: "10px 0" }}>
         <QRCodeSVG
           value={machineAddress}
           size={128}
           level="H" //error correction level
-          includeMargin={true}
+          marginSize={2}
         />
       </div>
       <button onClick={handleConnection}>
         {isConnected ? "Disconnect" : "Connect"}
       </button>
-      {isConnected && (
-        <button onClick={triggerRelay} style={{ marginLeft: "10px" }}>
-          Make Coffee
-        </button>
-      )}
     </li>
   );
 };
