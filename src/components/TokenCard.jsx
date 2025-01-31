@@ -83,6 +83,22 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
     }
   };
 
+  const withdrawFunds = async () =>{
+    if(!contract){
+      console.error("Contract not initialized");
+      return;
+    }
+
+    try{
+      const transaction = contract.withdraw();
+      await transaction.wait();
+      alert("Funds withdrawn from machine:", {machineAddress});
+    }catch(error){
+      console.error("Error withdrawing funds",error);
+      alert("Failed to withdraw");
+    }
+  };
+
   return (
     <li>
       <p>Token id: {tokenId}</p>
@@ -106,6 +122,7 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
       <button onClick={handleConnection}>
         {isConnected ? "Disconnect" : "Connect"}
       </button>
+      <button onClick={withdrawFunds} style={{ marginLeft: "10px" }}>Withdraw balance</button>
     </li>
   );
 };
