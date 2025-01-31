@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { COFFEE_MACHINE_ABI } from "../config";
 import { ethers } from "ethers";
 
-const TokenCard = ({ tokenId, machineAddress }) => {
+const TokenCard = ({ tokenId, machineAddress, provider }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [port, setPort] = useState(null); //serial port
   const [contract, setContract] = useState(null); //contract instance
 
   useEffect(() => {
+    if (!provider || !machineAddress) return;
+    
     //initialize the machine contract related to this specific TokenCard
     const initializeMachineContract = async () => {
       try{
@@ -25,6 +27,8 @@ const TokenCard = ({ tokenId, machineAddress }) => {
 
   useEffect(() => {
     //listen to Deposit event on this machine
+    if (!contract) return;
+
     const filter = contract.filters.Deposit();
     contract.on(filter,(payee,value,time,balance) => {
       console.log("Deposit event:", {payee,value,time,balance});

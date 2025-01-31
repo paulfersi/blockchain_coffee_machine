@@ -63,7 +63,7 @@ const MyNFTs = ({ provider }) => {
       {nfts.length > 0 ? (
         <ul>
           {nfts.map(({ tokenId, machineAddress }) => (
-            <TokenCard key={tokenId} tokenId={tokenId} machineAddress={machineAddress} />
+            <TokenCard key={tokenId} tokenId={tokenId} machineAddress={machineAddress} provider={provider} />
           ))}
         </ul>
       ) : (
