@@ -73,6 +73,7 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
   useEffect(() => {
     if (!contract) return;
 
+      const filter = contract.filters.Deposit();
       contract.on(filter, (payee, value, time, balance) => {
       console.log("Deposit event:", { payee, value, time, balance });
       triggerRelay();
@@ -80,6 +81,7 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
 
     return () => {
       contract.off(filter);
+      contract.removeAllListeners();
     };
   }, [contract]); 
 
