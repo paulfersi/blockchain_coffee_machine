@@ -19,18 +19,12 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
     }
   }
 
-  const updateMachineBalance = async () => {
-    const balance = await checkMachineBalance(machineAddress, provider);
-    setMachineBalance(balance);
-  }
-
   //handle Withdraw events
   const handleWithdrawEvent = (time, amount) => {
     console.log("Withdraw event:", { time, amount });
     const formattedAmount = ethers.utils.formatEther(amount); //wei to ether
     setWithdrawAmount(formattedAmount);
     alert(`Successfully withdrew ${formattedAmount} ETH!`);
-    updateMachineBalance();
   };
 
   useEffect(() => {
@@ -55,7 +49,7 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
         const machineContractInstance = new ethers.Contract(machineAddress, COFFEE_MACHINE_ABI, signer);
         setContract(machineContractInstance);
 
-        //listen to Withdraw events
+        // Listen to Withdraw events
         machineContractInstance.on("Withdraw", handleWithdrawEvent);
       } catch (error) {
         console.error("Error initializing machine contract for", { machineAddress });
@@ -73,13 +67,11 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
     contract.on(filter, (payee, value, time, balance) => {
       console.log("Deposit event:", { payee, value, time, balance });
       triggerRelay();
-      updateMachineBalance();
     });
 
     //cleanup filter once the component unmounts
     return () => {
       contract.off(filter);
-      contract.off("Withdraw", handleWithdrawEvent);
     };
   }, [contract]);
 
@@ -128,9 +120,8 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
       console.error("Contract not initialized");
       return;
     }
-
     if (machineBalance === "0.0" || machineBalance === "0") {
-      alert("Cannot withdraw: Balance is 0 ETH.");
+      alert("Cannot withdraw: Contract balance is 0 ETH.");
       return;
     }
 
