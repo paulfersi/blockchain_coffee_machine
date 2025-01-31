@@ -19,24 +19,21 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
     }
   }
 
-  //handle Withdraw events
-  const handleWithdrawEvent = (time, amount) => {
-    console.log("Withdraw event:", { time, amount });
-    const formattedAmount = ethers.utils.formatEther(amount); //wei to ether
-    setWithdrawAmount(formattedAmount);
-    alert(`Successfully withdrew ${formattedAmount} ETH!`);
+  const updateMachineBalance = async () => {
+    const balance = await checkMachineBalance(machineAddress, provider);
+    setMachineBalance(balance);
   };
 
   useEffect(() => {
-    if(!provider || !machineAddress) return;
+    if (!provider || !machineAddress) return;
 
-    const fetchMachineBalance = async () => {
-      const balance = await checkMachineBalance(machineAddress,provider);
-      setMachineBalance(balance);
-    }
+    updateMachineBalance();
+    const balancePollingInterval = setInterval(updateMachineBalance, 5000);
 
-    fetchMachineBalance();
-  }, [provider,machineAddress]);
+    return () => {
+      clearInterval(balancePollingInterval);
+    };
+  }, [provider, machineAddress]);
 
   useEffect(() => {
     if (!provider || !machineAddress) return;
@@ -49,8 +46,6 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
         const machineContractInstance = new ethers.Contract(machineAddress, COFFEE_MACHINE_ABI, signer);
         setContract(machineContractInstance);
 
-        // Listen to Withdraw events
-        machineContractInstance.on("Withdraw", handleWithdrawEvent);
       } catch (error) {
         console.error("Error initializing machine contract for", { machineAddress });
       }
@@ -60,20 +55,36 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
   }, [provider, machineAddress]);
 
   useEffect(() => {
-    //listen to Deposit event on this machine
     if (!contract) return;
 
-    const filter = contract.filters.Deposit();
-    contract.on(filter, (payee, value, time, balance) => {
-      console.log("Deposit event:", { payee, value, time, balance });
-      triggerRelay();
-    });
+    const handleWithdrawEvent = (time, amount) => {
+      const formattedAmount = ethers.utils.formatEther(amount);
+      alert(`Successfully withdrew ${formattedAmount} ETH!`);
+    };
 
-    //cleanup filter once the component unmounts
+    const filter = contract.filters.Withdraw();
+    contract.on(filter, handleWithdrawEvent);
+
     return () => {
-      contract.off(filter);
+      contract.off(filter, handleWithdrawEvent);
     };
   }, [contract]);
+
+  useEffect(() => {
+    if (!contract) return;
+
+    const handleDepositEvent = async (payee, value, time, balance) => {
+      console.log("Deposit event:", { payee, value, time, balance });
+      await triggerRelay();
+    };
+
+    const filter = contract.filters.Deposit();
+    contract.on(filter, handleDepositEvent);
+
+    return () => {
+      contract.off(filter, handleDepositEvent);
+    };
+  }, [contract]); 
 
   const handleConnection = async () => {
     if (isConnected) {
