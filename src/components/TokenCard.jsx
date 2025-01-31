@@ -73,16 +73,13 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
   useEffect(() => {
     if (!contract) return;
 
-    const handleDepositEvent = async (payee, value, time, balance) => {
+      contract.on(filter, (payee, value, time, balance) => {
       console.log("Deposit event:", { payee, value, time, balance });
-      await triggerRelay();
-    };
-
-    const filter = contract.filters.Deposit();
-    contract.on(filter, handleDepositEvent);
+      triggerRelay();
+    });
 
     return () => {
-      contract.off(filter, handleDepositEvent);
+      contract.off(filter);
     };
   }, [contract]); 
 
