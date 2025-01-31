@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { COFFEE_MACHINE_ABI } from "../config";
 import { ethers } from "ethers";
+import {QRCodeSVG} from 'qrcode.react';
 
 const TokenCard = ({ tokenId, machineAddress, provider }) => {
   const [isConnected, setIsConnected] = useState(false);
@@ -9,7 +10,7 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
 
   useEffect(() => {
     if (!provider || !machineAddress) return;
-    
+
     //initialize the machine contract related to this specific TokenCard
     const initializeMachineContract = async () => {
       try{
@@ -92,7 +93,15 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
       >
         {machineAddress}
       </a>
-      <br />
+      <br/>
+      <div style={{ margin: "10px 0" }}>
+        <QRCodeSVG
+          value={machineAddress}
+          size={128}
+          level="H" //error correction level
+          includeMargin={true}
+        />
+      </div>
       <button onClick={handleConnection}>
         {isConnected ? "Disconnect" : "Connect"}
       </button>
