@@ -6,8 +6,43 @@ import { QRCodeSVG } from 'qrcode.react';
 const TokenCard = ({ tokenId, machineAddress, provider }) => {
   const [isConnected, setIsConnected] = useState(false);
   const portRef = useRef(null); 
-
   const [contract, setContract] = useState(null); //contract instance
+  const [machineBalance, setMachineBalance] = useState(null);
+
+  const checkMachineBalance = async(machineAddress,provider) => {
+    try{
+      const balance = await provider.getBalance(machineAddress);
+      return ethers.utils.formatEther(balance); //wei to ether
+    }catch(error){
+      console.error("Error fetching contract balance:", error);
+      return null;
+    }
+  }
+
+  const updateMachineBalance = async () => {
+    const balance = await checkMachineBalance(machineAddress, provider);
+    setMachineBalance(balance);
+  }
+
+  //handle Withdraw events
+  const handleWithdrawEvent = (time, amount) => {
+    console.log("Withdraw event:", { time, amount });
+    const formattedAmount = ethers.utils.formatEther(amount); //wei to ether
+    setWithdrawAmount(formattedAmount);
+    alert(`Successfully withdrew ${formattedAmount} ETH!`);
+    updateMachineBalance();
+  };
+
+  useEffect(() => {
+    if(!provider || !machineAddress) return;
+
+    const fetchMachineBalance = async () => {
+      const balance = await checkMachineBalance(machineAddress,provider);
+      setMachineBalance(balance);
+    }
+
+    fetchMachineBalance();
+  }, [provider,machineAddress]);
 
   useEffect(() => {
     if (!provider || !machineAddress) return;
@@ -19,6 +54,9 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
 
         const machineContractInstance = new ethers.Contract(machineAddress, COFFEE_MACHINE_ABI, signer);
         setContract(machineContractInstance);
+
+        //listen to Withdraw events
+        machineContractInstance.on("Withdraw", handleWithdrawEvent);
       } catch (error) {
         console.error("Error initializing machine contract for", { machineAddress });
       }
@@ -35,11 +73,13 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
     contract.on(filter, (payee, value, time, balance) => {
       console.log("Deposit event:", { payee, value, time, balance });
       triggerRelay();
+      updateMachineBalance();
     });
 
     //cleanup filter once the component unmounts
     return () => {
       contract.off(filter);
+      contract.off("Withdraw", handleWithdrawEvent);
     };
   }, [contract]);
 
@@ -89,13 +129,17 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
       return;
     }
 
+    if (machineBalance === "0.0" || machineBalance === "0") {
+      alert("Cannot withdraw: Balance is 0 ETH.");
+      return;
+    }
+
     try{
       const transaction = contract.withdraw();
       await transaction.wait();
-      alert("Funds withdrawn from machine:", {machineAddress});
+      //the event listener will determine the success 
     }catch(error){
       console.error("Error withdrawing funds",error);
-      alert("Failed to withdraw");
     }
   };
 
@@ -111,6 +155,9 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
         {machineAddress}
       </a>
       <br />
+      {machineBalance !== null && (
+        <p>Balance: {machineBalance} ETH</p>
+      )}
       <div style={{ margin: "10px 0" }}>
         <QRCodeSVG
           value={machineAddress}
