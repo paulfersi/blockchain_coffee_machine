@@ -1,4 +1,4 @@
-const int relayPin = 8; 
+const int relayPin = 2; 
 
 void setup() {
   pinMode(relayPin, OUTPUT); 
