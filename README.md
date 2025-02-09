@@ -1,4 +1,4 @@
-# Blockchain Coffee Machine (WIP)
+# ChainedCoffee - Blockchain-connected Coffee Machine (WIP)
 
 My first solidity project
 
