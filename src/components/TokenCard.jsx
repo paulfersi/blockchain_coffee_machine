@@ -94,19 +94,26 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
       setIsConnected(false);
       alert("Arduino disconnected.");
     } else {
-      //connect the Arduino
+      // Connect to Arduino
       try {
         const newPort = await navigator.serial.requestPort();
-        await newPort.open({ baudRate: 9600 });
+        await newPort.open({ baudRate: 57600 });
         portRef.current = newPort;
         setIsConnected(true);
         alert("Arduino connected successfully!");
+
+        // Send machineAddress to Arduino
+        const writer = newPort.writable.getWriter();
+        await writer.write(new TextEncoder().encode(machineAddress + "\n")); // Send address followed by newline
+        writer.releaseLock();
+        console.log("Sent machineAddress to Arduino:", machineAddress);
       } catch (error) {
         console.error("Error connecting to Arduino:", error);
         alert("Failed to connect to Arduino.");
       }
     }
   };
+
 
   const triggerRelay = async () => {
     if (!portRef.current) {
