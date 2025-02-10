@@ -24,8 +24,8 @@
 QRCode QR;
 const uint8_t QR_VERSION = 3;
 const uint8_t QR_QUIET_ZONE = 4;
-const uint8_t MAX_MESSAGE_LENGTH = 40;        
-char receivedMessage[MAX_MESSAGE_LENGTH + 1]; 
+const uint8_t MAX_MESSAGE_LENGTH = 42;        // Ethereum address length
+char receivedMessage[MAX_MESSAGE_LENGTH + 1]; // Buffer to store received address
 
 void printQRBlock(uint16_t x, uint16_t y, uint8_t size, uint16_t col)
 {
@@ -54,6 +54,7 @@ void displayQRCode(char *msg, uint16_t x0, uint16_t y0)
                          y0 + QR.size + (2 * QR_QUIET_ZONE),
                          GxEPD_WHITE);
 
+        // Draw the QR code
         for (uint8_t y = 0; y < QR.size; y++)
         {
             for (uint8_t x = 0; x < QR.size; x++)
@@ -65,16 +66,43 @@ void displayQRCode(char *msg, uint16_t x0, uint16_t y0)
                                  (qrcode_getModule(&QR, x, y)) ? GxEPD_BLACK : GxEPD_WHITE);
             }
         }
+
+        // Adjust the position of the fixed message further to the right
+        uint16_t textX = x0 + (QR.size * blockSize) + (QR_QUIET_ZONE * 4) + 10; // Increased distance
+        uint16_t textY = y0 + QR.size * blockSize / 2 + 50;                     // Vertically centered
+
+        display.setTextColor(GxEPD_BLACK); // Set text color to black
+        display.setTextSize(5);            // Increase the text size
+        display.setCursor(textX, textY);   // Set the cursor position for the text
+
+        display.setRotation(4); // Rotate text 90 degrees left
+        textY -= 20;
+        display.setCursor(textX, textY); // Update cursor position after rotation
+        display.print("SCAN");           // Print the message
+
+        textY += 40;
+
+        display.setCursor(textX, textY); // Update cursor position after rotation
+        display.print("HERE");           // Print the message
+        textY += 40;
+        display.setCursor(textX, textY); // Update cursor position after rotation
+        display.print("TO");             // Print the message
+        textY += 40;
+        display.setCursor(textX, textY); // Update cursor position after rotation
+        display.print("BREW");           // Print the message
+
+        display.setRotation(1); // Reset rotation for other operations
+
     } while (display.nextPage());
 }
 
 void setup(void)
 {
     Serial.begin(57600);
-    Serial.println(F("\nWaiting for address..."));
+    Serial.println(F("\nWaiting for Ethereum address..."));
 
     display.init();
-    display.setRotation(1);
+    display.setRotation(1); // Set display rotation
     memset(receivedMessage, 0, sizeof(receivedMessage));
 }
 
@@ -88,7 +116,7 @@ void loop(void)
         Serial.print(F("\nReceived Address: "));
         Serial.println(receivedMessage);
 
-        display.fillScreen(GxEPD_WHITE);
-        displayQRCode(receivedMessage, 0, 0);
+        display.fillScreen(GxEPD_WHITE);      // Clear the screen before drawing new content
+        displayQRCode(receivedMessage, 0, 0); // Display QR code
     }
 }
