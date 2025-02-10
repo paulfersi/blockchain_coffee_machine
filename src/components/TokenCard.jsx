@@ -97,7 +97,7 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
       // Connect to Arduino
       try {
         const newPort = await navigator.serial.requestPort();
-        await newPort.open({ baudRate: 57600 });
+        await newPort.open({ baudRate: 9600 });
         portRef.current = newPort;
         setIsConnected(true);
         alert("Arduino connected successfully!");
@@ -105,6 +105,7 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
         // Send machineAddress to Arduino
         const writer = newPort.writable.getWriter();
         await writer.write(new TextEncoder().encode(machineAddress + "\n")); // Send address followed by newline
+        await writer.ready;
         writer.releaseLock();
         console.log("Sent machineAddress to Arduino:", machineAddress);
       } catch (error) {

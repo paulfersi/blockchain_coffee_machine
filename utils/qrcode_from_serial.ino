@@ -98,9 +98,7 @@ void displayQRCode(char *msg, uint16_t x0, uint16_t y0)
 
 void setup(void)
 {
-    Serial.begin(57600);
-    Serial.println(F("\nWaiting for Ethereum address..."));
-
+    Serial.begin(9600);
     display.init();
     display.setRotation(1); // Set display rotation
     memset(receivedMessage, 0, sizeof(receivedMessage));
@@ -110,13 +108,9 @@ void loop(void)
 {
     if (Serial.available() > 0)
     {
-        int len = Serial.readBytesUntil('\n', receivedMessage, MAX_MESSAGE_LENGTH);
-        receivedMessage[len] = '\0';
-
-        Serial.print(F("\nReceived Address: "));
-        Serial.println(receivedMessage);
-
-        display.fillScreen(GxEPD_WHITE);      // Clear the screen before drawing new content
-        displayQRCode(receivedMessage, 0, 0); // Display QR code
+        String receivedMessage = Serial.readStringUntil('\n');
+        receivedMessage.trim(); 
+        display.fillScreen(GxEPD_WHITE);              // Clear the screen
+        displayQRCode(receivedMessage.c_str(), 0, 0); // Display QR code
     }
 }
