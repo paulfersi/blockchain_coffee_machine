@@ -5,15 +5,15 @@ import { QRCodeSVG } from 'qrcode.react';
 
 const TokenCard = ({ tokenId, machineAddress, provider }) => {
   const [isConnected, setIsConnected] = useState(false);
-  const portRef = useRef(null); 
-  const [contract, setContract] = useState(null); //contract instance
+  const portRef = useRef(null);
+  const [contract, setContract] = useState(null);
   const [machineBalance, setMachineBalance] = useState(null);
 
-  const checkMachineBalance = async(machineAddress,provider) => {
-    try{
+  const checkMachineBalance = async(machineAddress, provider) => {
+    try {
       const balance = await provider.getBalance(machineAddress);
-      return ethers.utils.formatEther(balance); //wei to ether
-    }catch(error){
+      return ethers.utils.formatEther(balance);
+    } catch(error) {
       console.error("Error fetching contract balance:", error);
       return null;
     }
@@ -38,14 +38,11 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
   useEffect(() => {
     if (!provider || !machineAddress) return;
 
-    //initialize the machine contract related to this specific TokenCard
     const initializeMachineContract = async () => {
       try {
         const signer = provider.getSigner();
-
         const machineContractInstance = new ethers.Contract(machineAddress, COFFEE_MACHINE_ABI, signer);
         setContract(machineContractInstance);
-
       } catch (error) {
         console.error("Error initializing machine contract for", { machineAddress });
       }
@@ -73,8 +70,8 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
   useEffect(() => {
     if (!contract) return;
 
-      const filter = contract.filters.Deposit();
-      contract.on(filter, (payee, value, time, balance) => {
+    const filter = contract.filters.Deposit();
+    contract.on(filter, (payee, value, time, balance) => {
       console.log("Deposit event:", { payee, value, time, balance });
       triggerRelay();
     });
@@ -94,7 +91,6 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
       setIsConnected(false);
       alert("Arduino disconnected.");
     } else {
-      //connect the Arduino
       try {
         const newPort = await navigator.serial.requestPort();
         await newPort.open({ baudRate: 9600 });
@@ -116,7 +112,7 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
 
     try {
       const writer = portRef.current.writable.getWriter();
-      await writer.write(new TextEncoder().encode("TRIGGER_RELAY\n")); //send custom command to arduino
+      await writer.write(new TextEncoder().encode("TRIGGER_RELAY\n"));
       writer.releaseLock();
       alert("Relay triggered!");
     } catch (error) {
@@ -125,8 +121,8 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
     }
   };
 
-  const withdrawFunds = async () =>{
-    if(!contract){
+  const withdrawFunds = async () => {
+    if(!contract) {
       console.error("Contract not initialized");
       return;
     }
@@ -135,42 +131,68 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
       return;
     }
 
-    try{
+    try {
       const transaction = contract.withdraw();
       await transaction.wait();
-      //the event listener will determine the success 
-    }catch(error){
-      console.error("Error withdrawing funds",error);
+    } catch(error) {
+      console.error("Error withdrawing funds", error);
     }
   };
 
+
   return (
-    <li>
-      <p>Token id: {tokenId}</p>
-      <p>Machine associated: </p>
-      <a
-        href={`https://sepolia.etherscan.io/address/${machineAddress}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {machineAddress}
-      </a>
-      <br />
+    <li className="card" style={{ margin: "1rem 0" }}>
+      <div className="info-row">
+        <span className="info-label">Token ID:</span>
+        <span className="info-value">{tokenId}</span>
+      </div>
+      
+      <div className="info-row">
+        <span className="info-label">Machine Address:</span>
+        <a
+          href={`https://sepolia.etherscan.io/address/${machineAddress}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "var(--primary-color)" }}
+        >
+          {machineAddress}
+        </a>
+      </div>
+      
       {machineBalance !== null && (
-        <p>Balance: {machineBalance} ETH</p>
+        <div className="info-row">
+          <span className="info-label">Balance:</span>
+          <span className="info-value">{parseFloat(machineBalance).toFixed(4)} ETH</span>
+        </div>
       )}
-      <div style={{ margin: "10px 0" }}>
+      
+      <div className="center-content" style={{ margin: "1rem 0" }}>
         <QRCodeSVG
           value={machineAddress}
           size={128}
-          level="H" //error correction level
+          level="H"
           marginSize={2}
+          style={{ background: 'white', padding: '0.5rem', borderRadius: '0.25rem' }}
         />
       </div>
-      <button onClick={handleConnection}>
-        {isConnected ? "Disconnect" : "Connect"}
-      </button>
-      <button onClick={withdrawFunds} style={{ marginLeft: "10px" }}>Withdraw balance</button>
+      
+      <div className="center-content" style={{ display: 'flex', gap: '0.5rem' }}>
+        <button 
+          onClick={handleConnection}
+          style={{ 
+            backgroundColor: isConnected ? 'var(--error-color)' : 'var(--primary-color)'
+          }}
+        >
+          {isConnected ? "Disconnect Machine" : "Connect Machine"}
+        </button>
+        
+        <button 
+          onClick={withdrawFunds}
+          disabled={machineBalance === "0.0" || machineBalance === "0"}
+        >
+          Withdraw Balance
+        </button>
+      </div>
     </li>
   );
 };
