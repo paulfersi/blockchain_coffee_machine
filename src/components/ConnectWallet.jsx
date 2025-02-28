@@ -47,7 +47,7 @@ const ConnectWallet = ({ setProvider }) => {
       {!account ? (
         <div className="text-center">
           <button 
-            className="btn btn-primary"
+            className="btn btn-outline-dark"
             onClick={connectWallet} 
             disabled={isConnecting}
           >

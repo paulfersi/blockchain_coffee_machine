@@ -181,14 +181,14 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
 
       <div className="d-grid gap-2">
         <button
-          className={`btn ${isConnected ? "btn-danger" : "btn-primary"}`}
+          className={`btn ${isConnected ? "btn-danger" : "btn-outline-dark"}`}
           onClick={handleConnection}
         >
           {isConnected ? "Disconnect Machine" : "Connect Machine"}
         </button>
 
         <button
-          className="btn btn-secondary"
+          className="btn btn-outline-dark"
           onClick={withdrawFunds}
           disabled={machineBalance === "0.0" || machineBalance === "0"}
         >

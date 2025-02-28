@@ -51,7 +51,7 @@ const MintNFT = ({ provider }) => {
 
       <div className="text-center">
         <button
-          className="btn btn-primary"
+          className="btn btn-outline-dark"
           onClick={mintNFT}
           disabled={!provider || loading}
         >
