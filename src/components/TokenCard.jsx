@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { COFFEE_MACHINE_ABI } from "../config";
 import { ethers } from "ethers";
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeSVG } from "qrcode.react";
 
 const TokenCard = ({ tokenId, machineAddress, provider }) => {
   const [isConnected, setIsConnected] = useState(false);
@@ -9,15 +9,15 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
   const [contract, setContract] = useState(null);
   const [machineBalance, setMachineBalance] = useState(null);
 
-  const checkMachineBalance = async(machineAddress, provider) => {
+  const checkMachineBalance = async (machineAddress, provider) => {
     try {
       const balance = await provider.getBalance(machineAddress);
       return ethers.utils.formatEther(balance);
-    } catch(error) {
+    } catch (error) {
       console.error("Error fetching contract balance:", error);
       return null;
     }
-  }
+  };
 
   const updateMachineBalance = async () => {
     const balance = await checkMachineBalance(machineAddress, provider);
@@ -41,7 +41,11 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
     const initializeMachineContract = async () => {
       try {
         const signer = provider.getSigner();
-        const machineContractInstance = new ethers.Contract(machineAddress, COFFEE_MACHINE_ABI, signer);
+        const machineContractInstance = new ethers.Contract(
+          machineAddress,
+          COFFEE_MACHINE_ABI,
+          signer
+        );
         setContract(machineContractInstance);
       } catch (error) {
         console.error("Error initializing machine contract for", { machineAddress });
@@ -80,7 +84,7 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
       contract.off(filter);
       contract.removeAllListeners();
     };
-  }, [contract]); 
+  }, [contract]);
 
   const handleConnection = async () => {
     if (isConnected) {
@@ -122,7 +126,7 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
   };
 
   const withdrawFunds = async () => {
-    if(!contract) {
+    if (!contract) {
       console.error("Contract not initialized");
       return;
     }
@@ -134,66 +138,64 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
     try {
       const transaction = contract.withdraw();
       await transaction.wait();
-    } catch(error) {
+    } catch (error) {
       console.error("Error withdrawing funds", error);
     }
   };
 
-
   return (
-    <li className="card" style={{ margin: "1rem 0" }}>
-      <div className="info-row">
-        <span className="info-label">Token ID:</span>
-        <span className="info-value">{tokenId}</span>
+    <div className="card h-100 p-3">
+      <div className="d-flex justify-content-between mb-2">
+        <span className="text-muted">Token ID:</span>
+        <span className="text-monospace">{tokenId}</span>
       </div>
-      
-      <div className="info-row">
-        <span className="info-label">Machine Address:</span>
+
+      <div className="d-flex justify-content-between mb-2">
+        <span className="text-muted">Machine Address:</span>
         <a
           href={`https://sepolia.etherscan.io/address/${machineAddress}`}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: "var(--primary-color)" }}
+          className="text-decoration-none"
         >
           {machineAddress}
         </a>
       </div>
-      
+
       {machineBalance !== null && (
-        <div className="info-row">
-          <span className="info-label">Balance:</span>
-          <span className="info-value">{parseFloat(machineBalance).toFixed(4)} ETH</span>
+        <div className="d-flex justify-content-between mb-3">
+          <span className="text-muted">Balance:</span>
+          <span className="text-monospace">{parseFloat(machineBalance).toFixed(4)} ETH</span>
         </div>
       )}
-      
-      <div className="center-content" style={{ margin: "1rem 0" }}>
+
+      <div className="text-center mb-3">
         <QRCodeSVG
           value={machineAddress}
           size={128}
           level="H"
           marginSize={2}
-          style={{ background: 'white', padding: '0.5rem', borderRadius: '0.25rem' }}
+          style={{ background: "white", padding: "0.5rem", borderRadius: "0.25rem" }}
         />
       </div>
-      
-      <div className="center-content" style={{ display: 'flex', gap: '0.5rem' }}>
-        <button 
+
+      <div className="d-grid gap-2">
+        <button
+          className={`btn ${isConnected ? "btn-danger" : "btn-primary"}`}
           onClick={handleConnection}
-          style={{ 
-            backgroundColor: isConnected ? 'var(--error-color)' : 'var(--primary-color)'
-          }}
         >
           {isConnected ? "Disconnect Machine" : "Connect Machine"}
         </button>
-        
-        <button 
+
+        <button
+          className="btn btn-secondary"
           onClick={withdrawFunds}
           disabled={machineBalance === "0.0" || machineBalance === "0"}
         >
           Withdraw Balance
         </button>
       </div>
-    </li>
+    </div>
   );
 };
 

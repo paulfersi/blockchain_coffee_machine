@@ -40,36 +40,36 @@ const ConnectWallet = ({ setProvider }) => {
     }
   };
 
-
   return (
     <div className="card">
-      <h2 className="card-title">Wallet Connection</h2>
+      <h2 className="card-title text-center">Wallet Connection</h2>
       
       {!account ? (
-        <div className="center-content">
+        <div className="text-center">
           <button 
+            className="btn btn-primary"
             onClick={connectWallet} 
             disabled={isConnecting}
           >
             {isConnecting ? "Connecting..." : "Connect MetaMask"}
           </button>
           
-          {error && <div className="error-message">{error}</div>}
+          {error && <div className="alert alert-danger mt-3">{error}</div>}
         </div>
       ) : (
         <div className="wallet-info">
-          <div className="info-row">
-            <span className="info-label">Account</span>
-            <span className="info-value">{account}</span>
+          <div className="d-flex justify-content-between">
+            <span className="text-muted">Account</span>
+            <span className="text-monospace">{account}</span>
           </div>
           
-          <div className="info-row">
-            <span className="info-label">Balance</span>
-            <span className="info-value">{parseFloat(balance).toFixed(4)} ETH</span>
+          <div className="d-flex justify-content-between mt-2">
+            <span className="text-muted">Balance</span>
+            <span className="text-monospace">{parseFloat(balance).toFixed(4)} ETH</span>
           </div>
           
-          <div className="center-content">
-            <span className="status-badge">Connected</span>
+          <div className="text-center mt-3">
+            <span className="badge bg-success">Connected</span>
           </div>
         </div>
       )}
