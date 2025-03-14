@@ -156,7 +156,14 @@ const TokenCard = ({ tokenId, machineAddress, provider }) => {
           href={`https://sepolia.etherscan.io/address/${machineAddress}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-decoration-none"
+          title={machineAddress}
+          style={{
+            display: "inline-block",
+            maxWidth: "100%",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }} //this way the machine
         >
           {machineAddress}
         </a>

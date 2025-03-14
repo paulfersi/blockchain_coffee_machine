@@ -41,7 +41,7 @@ const ConnectWallet = ({ setProvider }) => {
   };
 
   return (
-    <div className="card">
+    <div className="card p-3">
       <h2 className="card-title text-center">Wallet Connection</h2>
       
       {!account ? (
