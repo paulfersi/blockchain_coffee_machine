@@ -5,7 +5,7 @@ My first solidity project
 WARNING: THIS IS STILL WORK IN PROGRESS
 
 <p align="center">
-  <img src="/utils/physical_device.png" width="500">
+  <img src="/utils/physical_device.jpg" width="500">
 </p>
 
 ## Features
