@@ -6,7 +6,7 @@
   <img src="/utils/physical_device.jpg" width="500">
 </p>
 
-This is an experimental Web3 project that merges smart contracts with physical hardware. It allows users to activate a real coffee machine by sending ETH to its associated smart contract. Each machine is linked to its own unique NFT, offering a fun and practical example of how decentralized ownership and payments can connect with the real world.
+This experimental Web3 project was developed as part of my Bachelor's thesis to explore the interaction between blockchain technology, smart contracts, and physical hardware. It allows users to activate a real coffee machine by sending ETH to its associated smart contract. Each machine is linked to its own unique NFT, offering a fun and practical example of how decentralized ownership and payments can connect with the real world.
 
 ## Tech stack
 
